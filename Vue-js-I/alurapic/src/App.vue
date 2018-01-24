@@ -1,86 +1,44 @@
 <template>
   <div class="corpo">
 
-    <h1 class="centralizado">{{ titulo }}</h1>
-    <input type="search" class="filtro" @input="filtro = $event.target.value" placeholder="Filtre por nome">
+    <Meu-menu :rotas="routes"/>
 
-    <ul class="lista-fotos">
-      <li class="lista-fotos-item" v-for="foto of fotosComFiltro">
-        <meu-painel :titulo="foto.titulo">
-          <imagem-responsiva :url="foto.url" :titulo="foto.titulo" />
-        </meu-painel>
-      </li>
-    </ul>
+    <transition name="pagina">
+      <router-view></router-view>
+    </transition>
   </div>
 </template>
 
 <script>
-
-  import Painel from './components/shared/painel/Painel.vue';
-  import ImagemResponsiva from './components/shared/imagem-responsiva/ImagemResponsiva.vue';
+  import { routes } from './routes';
+  import Menu from './components/shared/menu/Menu.vue';
 
   export default {
 
     components: {
-      'meu-painel': Painel,
-      'imagem-responsiva': ImagemResponsiva
+      'Meu-menu': Menu
     },
 
     data() {
       return {
-        titulo: 'Alurapic',
-        fotos: [],
-        filtro: ''
+        routes
       }
-    },
-
-    computed: {
-      fotosComFiltro() {
-        if (this.filtro) {
-
-          let regex = new RegExp(this.filtro.trim(), "i");
-          return this.fotos.filter(foto => regex.test(foto.titulo));
-
-        } else {
-          return this.fotos;
-        }
-      }
-
-    },
-    created() {
-          this.$http.get("http://localhost:3000/v1/fotos")
-            .then(res => res.json())
-            .then(fotos => this.fotos = fotos, err => console.log(err));
     }
   }
 </script>
 
 <style>
-
-  .centralizado {
-    text-align: center;
-  }
-
   .corpo {
     font-family: Helvetica, sans-serif;
     margin: 0 auto;
     width: 96%;
   }
 
-  .lista-fotos {
-    list-style: none;
+  .pagina-enter, .pagina-leave-active {
+    opacity: 0
   }
 
-  .lista-fotos .lista-fotos-item {
-    display: inline-block;
+  .pagina-enter-active, .pagina-leave-active {
+    transition: opacity .4s
   }
-
-  .imagem-responsiva {
-    width: 100%;
-  }
-
-  .filtro {
-    width: 100%;
-  }
-
 </style>
